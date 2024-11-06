@@ -1,5 +1,5 @@
 import { useTheme } from '@emotion/react';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Sidebar, Menu, MenuItem, SubMenu, menuClasses } from 'react-pro-sidebar';
 import { tokens } from '../theme';
 import { Box, IconButton, Typography, Avatar } from '@mui/material';
@@ -23,9 +23,28 @@ const MySidebar = () => {
   const location = useLocation();
   const { pathname } = location;
 
-  console.log(pathname);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false); // Optionally, if you want to expand when width is > 768
+      }
+    };
+  
+    // Attach the resize event listener
+    window.addEventListener("resize", handleResize);
+  
+    // Call it initially to set the correct state based on the current window size
+    handleResize();
+  
+    // Cleanup the event listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
+
       <Sidebar backgroundColor="" collapsed={isCollapsed}>
         <Box paddingY={2} >
           {
@@ -59,7 +78,12 @@ const MySidebar = () => {
           }
           {
             isCollapsed && (
-              <Box display={"flex"} justifyContent={"center"} alignItems={"center"} marginLeft={1} marginY={2}>
+              <Box justifyContent={"center"} alignItems={"center"} marginLeft={1} marginY={2} sx={{
+                display: {
+                  xs: "none",
+                  md: "flex"
+                }
+              }}>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuIcon />
                 </IconButton>
@@ -105,6 +129,7 @@ const MySidebar = () => {
                 backgroundColor: colors.primary[500],
               },
             }}>
+              <MenuItem > Pie charts </MenuItem>
               <MenuItem > Pie charts </MenuItem>
               <MenuItem> Line charts </MenuItem>
             </SubMenu>
